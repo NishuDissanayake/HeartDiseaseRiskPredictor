@@ -1,5 +1,6 @@
 import pandas as panda
 from sklearn.ensemble import RandomForestClassifier
+import pickle
 
 #Importing the dataset
 myData = panda.read_csv('heart-disease-data.csv')
@@ -18,7 +19,7 @@ y = myData['target']
 myRF = RandomForestClassifier()
 myRF.fit(x,y)
 
-patientData0 = panda.DataFrame ({
+patientData = panda.DataFrame ({
     'age': 40,
     'sex': 1,
     'cp': 0,
@@ -34,26 +35,46 @@ patientData0 = panda.DataFrame ({
     'thal': 3
 }, index=[0])
 
-patientData1 = panda.DataFrame ({
-    'age': 71,
-    'sex': 0,
+#print(patientData)
+
+#Predict the heart disease risk
+rslt = myRF.predict(patientData)
+#print(rslt)
+
+if(rslt == 1):
+    print("Heart disease risk detected!")
+elif(rslt == 0):
+    print("Heart disease risk not detected!")
+else:
+    print("Something went wrong. Please try again!")
+
+#Save the file
+filename = "model.pkl"
+pickle.dump(myRF, open(filename, 'wb'))
+
+#Load the saved model
+loading_model = pickle.load(open("model.pkl", 'rb'))
+
+patientData = panda.DataFrame ({
+    'age': 40,
+    'sex': 1,
     'cp': 0,
-    'trestbps': 112,
-    'chol': 149,
+    'trestbps': 125,
+    'chol': 212,
     'fbs': 0,
     'restecg': 1,
-    'thalach': 125,
+    'thalach': 168,
     'exang': 0,
-    'oldpeak': 1.6,
-    'slope': 1,
-    'ca': 0,
-    'thal': 2
+    'oldpeak': 1.0,
+    'slope': 2,
+    'ca': 2,
+    'thal': 3
 }, index=[0])
 
 #print(patientData)
 
 #Predict the heart disease risk
-rslt = myRF.predict(patientData1)
+rslt = loading_model.predict(patientData)
 #print(rslt)
 
 if(rslt == 1):
